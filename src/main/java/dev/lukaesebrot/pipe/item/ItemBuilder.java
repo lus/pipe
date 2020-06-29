@@ -1,4 +1,4 @@
-package dev.lukaesebrot.pipe.items;
+package dev.lukaesebrot.pipe.item;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
