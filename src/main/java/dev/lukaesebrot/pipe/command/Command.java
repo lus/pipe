@@ -129,10 +129,8 @@ public class Command {
 
     /**
      * Registers the current command as a root command
-     *
-     * @param enableTabComplete Whether or not tab completion should be registered
      */
-    public void registerAsRootCommand(boolean enableTabComplete) {
+    public void registerAsRootCommand() {
         try {
             // Define the needed reflection method to register a command
             Method getCommandMap = Bukkit.getServer().getClass().getMethod("getCommandMap", null);
@@ -140,38 +138,23 @@ public class Command {
             Method registerCommand = commandMap.getClass().getMethod("register", String.class, org.bukkit.command.Command.class);
 
             // Register the current command using Bukkits command map
-            if (enableTabComplete) {
-                registerCommand.invoke(commandMap, name, new org.bukkit.command.Command(name, description, usage, Arrays.asList(aliases)) {
+            registerCommand.invoke(commandMap, name, new org.bukkit.command.Command(name, description, usage, Arrays.asList(aliases)) {
 
-                    @Override
-                    public boolean execute(CommandSender sender, String label, String[] args) {
-                        // Emit the current command
-                        emit(sender, args);
+                @Override
+                public boolean execute(CommandSender sender, String label, String[] args) {
+                    // Emit the current command
+                    emit(sender, args);
 
-                        // Return a successful execution to not print the usage message
-                        return true;
-                    }
+                    // Return a successful execution to not print the usage message
+                    return true;
+                }
 
-                    @Override
-                    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-                        return Arrays.stream(subCommands).map(Command::getName).collect(Collectors.toList());
-                    }
+                @Override
+                public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+                    return Arrays.stream(subCommands).map(Command::getName).collect(Collectors.toList());
+                }
 
-                });
-            } else {
-                registerCommand.invoke(commandMap, name, new org.bukkit.command.Command(name, description, usage, Arrays.asList(aliases)) {
-
-                    @Override
-                    public boolean execute(CommandSender sender, String label, String[] args) {
-                        // Emit the current command
-                        emit(sender, args);
-
-                        // Return a successful execution to not print the usage message
-                        return true;
-                    }
-
-                });
-            }
+            });
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
             exception.printStackTrace();
         }
