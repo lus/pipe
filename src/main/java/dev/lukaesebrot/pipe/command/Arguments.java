@@ -1,6 +1,7 @@
 package dev.lukaesebrot.pipe.command;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Represents a set of arguments
@@ -44,6 +45,19 @@ public class Arguments {
      */
     public Argument[] getArguments() {
         return arguments;
+    }
+
+    /**
+     * Tries to return a specific argument
+     *
+     * @param index The index of the argument
+     * @return The optional argument
+     */
+    public Optional<Argument> get(int index) {
+        if (index + 1 > arguments.length) {
+            return Optional.empty();
+        }
+        return Optional.of(arguments[index]);
     }
 
 }
