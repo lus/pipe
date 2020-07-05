@@ -24,7 +24,7 @@ public class Arguments {
     public Arguments(String raw) {
         raw = raw.trim();
         this.raw = raw;
-        this.arguments = Arrays.stream(raw.split("\\s+")).map(Argument::new).toArray(Argument[]::new);
+        this.arguments = raw.isEmpty() ? new Argument[0] : Arrays.stream(raw.split("\\s+")).map(Argument::new).toArray(Argument[]::new);
     }
 
     /**
