@@ -22,6 +22,7 @@ public class Arguments {
      * @param raw The raw string to parse the arguments from
      */
     public Arguments(String raw) {
+        raw = raw.trim();
         this.raw = raw;
         this.arguments = Arrays.stream(raw.split("\\s+")).map(Argument::new).toArray(Argument[]::new);
     }
