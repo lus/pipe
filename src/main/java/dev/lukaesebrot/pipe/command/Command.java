@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -90,6 +91,13 @@ public class Command {
     }
 
     /**
+     * @return The sub commands of the command
+     */
+    public Command[] getSubCommands() {
+        return subCommands;
+    }
+
+    /**
      * Checks whether or not the current command corresponds to the first string of the given array
      *
      * @param strings The array to check
@@ -128,6 +136,25 @@ public class Command {
     }
 
     /**
+     * Calls the tab completion handler for the first corresponding command
+     *
+     * @param sender The sender of the tab completion event
+     * @param alias  The alias the sender used
+     * @param args   The arguments the sender specified
+     * @return A list of tab completions
+     */
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+        // Check if a sub command corresponds to the given arguments and trigger it
+        Optional<Command> subCommand = Arrays.stream(subCommands).filter(command -> command.corresponds(args)).findFirst();
+        if (subCommand.isPresent()) {
+            return subCommand.get().tabComplete(sender, alias, Arrays.copyOfRange(args, 1, args.length));
+        }
+
+        // Trigger the first registered execution handler for the tab-completion
+        return handlers.length != 0 ? handlers[0].handleTabComplete(this, sender, alias, args) : Collections.emptyList();
+    }
+
+    /**
      * Registers the current command as a root command
      */
     public void registerAsRootCommand() {
@@ -151,7 +178,7 @@ public class Command {
 
                 @Override
                 public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-                    return Arrays.stream(subCommands).map(Command::getName).collect(Collectors.toList());
+                    return Command.this.tabComplete(sender, alias, args);
                 }
 
             });

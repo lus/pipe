@@ -5,6 +5,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Represents a command execution handler
  *
@@ -77,6 +81,22 @@ public interface ExecutionHandler {
      */
     default void handlePlayerExecution(Command command, Player player, Arguments arguments) {
         // Empty by default
+    }
+
+    /**
+     * Gets called whenever a linked command gets tab completed
+     *
+     * @param sender The sender of the tab completion event
+     * @param alias  The alias the sender used
+     * @param args   The arguments the sender specified
+     * @return A list of tab completions
+     */
+    default List<String> handleTabComplete(Command command, CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+        String firstArgument = args.length != 0 ? args[0] : "";
+        return Arrays.stream(command.getSubCommands())
+                .map(Command::getName)
+                .filter(name -> name.toLowerCase().startsWith(firstArgument.toLowerCase()))
+                .collect(Collectors.toList());
     }
 
 }
