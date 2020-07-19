@@ -55,6 +55,26 @@ public class TextComponentBuilder {
     }
 
     /**
+     * Appends another newline and a text component to the current
+     *
+     * @param component The component to append
+     * @return The new text component builder state
+     */
+    public TextComponentBuilder appendLine(TextComponent component) {
+        return append("\n").append(component);
+    }
+
+    /**
+     * Appends another newline and a string to the current
+     *
+     * @param text The string to append
+     * @return The new text component builder state
+     */
+    public TextComponentBuilder appendLine(String text) {
+        return append("\n").append(text);
+    }
+
+    /**
      * Sets the text to show when hovering over the component
      *
      * @param text The text to show when hovering over the component
