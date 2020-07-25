@@ -71,7 +71,7 @@ public class GUIBuilder {
      * @return The new GUI builder state
      */
     public GUIBuilder fill(ItemStack itemStack) {
-        IntStream.of(size).forEach(index ->
+        IntStream.range(0, size).forEach(index ->
                 components.put(index, new GUIItem(itemStack, defaultItemDraggingPolicy))
         );
         return this;
