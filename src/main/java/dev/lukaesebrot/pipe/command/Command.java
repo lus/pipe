@@ -1,15 +1,14 @@
 package dev.lukaesebrot.pipe.command;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
 
 /**
  * Represents a basic command
@@ -68,6 +67,7 @@ public class Command {
      * Checks the permissions of the given player with the local {@link PermissionPolicy}
      *
      * @param sender The command sender to check the permissions on
+     *
      * @return Whether or not the player has the required permission(s)
      */
     public boolean checkPermissions(CommandSender sender) {
@@ -101,6 +101,7 @@ public class Command {
      * Checks whether or not the current command corresponds to the first string of the given array
      *
      * @param strings The array to check
+     *
      * @return Whether or not the current command corresponds to the first string of the given array
      */
     public boolean corresponds(String[] strings) {
@@ -141,6 +142,7 @@ public class Command {
      * @param sender The sender of the tab completion event
      * @param alias  The alias the sender used
      * @param args   The arguments the sender specified
+     *
      * @return A list of tab completions
      */
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
@@ -158,33 +160,34 @@ public class Command {
      * Registers the current command as a root command
      */
     public void registerAsRootCommand() {
+        CommandMap commandMap;
         try {
-            // Define the needed reflection method to register a command
-            Method getCommandMap = Bukkit.getServer().getClass().getMethod("getCommandMap", null);
-            Object commandMap = getCommandMap.invoke(Bukkit.getServer(), null);
-            Method registerCommand = commandMap.getClass().getMethod("register", String.class, org.bukkit.command.Command.class);
-
-            // Register the current command using Bukkits command map
-            registerCommand.invoke(commandMap, name, new org.bukkit.command.Command(name, description, usage, Arrays.asList(aliases)) {
-
-                @Override
-                public boolean execute(CommandSender sender, String label, String[] args) {
-                    // Emit the current command
-                    emit(sender, args);
-
-                    // Return a successful execution to not print the usage message
-                    return true;
-                }
-
-                @Override
-                public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-                    return Command.this.tabComplete(sender, alias, args);
-                }
-
-            });
+            // Obtain the Bukkit command map through reflection
+            Method getCommandMap = Bukkit.getServer().getClass().getMethod("getCommandMap");
+            commandMap = (CommandMap) getCommandMap.invoke(Bukkit.getServer());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
             exception.printStackTrace();
+            return;
         }
+
+        // Register the current command using Bukkits command map
+        commandMap.register(name, new org.bukkit.command.Command(name, description, usage, Arrays.asList(aliases)) {
+
+            @Override
+            public boolean execute(CommandSender sender, String label, String[] args) {
+                // Emit the current command
+                emit(sender, args);
+
+                // Return a successful execution to not print the usage message
+                return true;
+            }
+
+            @Override
+            public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+                return Command.this.tabComplete(sender, alias, args);
+            }
+
+        });
     }
 
 }
