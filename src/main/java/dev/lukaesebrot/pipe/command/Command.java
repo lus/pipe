@@ -67,7 +67,6 @@ public class Command {
      * Checks the permissions of the given player with the local {@link PermissionPolicy}
      *
      * @param sender The command sender to check the permissions on
-     *
      * @return Whether or not the player has the required permission(s)
      */
     public boolean checkPermissions(CommandSender sender) {
@@ -101,7 +100,6 @@ public class Command {
      * Checks whether or not the current command corresponds to the first string of the given array
      *
      * @param strings The array to check
-     *
      * @return Whether or not the current command corresponds to the first string of the given array
      */
     public boolean corresponds(String[] strings) {
@@ -142,7 +140,6 @@ public class Command {
      * @param sender The sender of the tab completion event
      * @param alias  The alias the sender used
      * @param args   The arguments the sender specified
-     *
      * @return A list of tab completions
      */
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
